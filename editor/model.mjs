@@ -66,11 +66,11 @@ function blockHtml(b){
  const tag=b.type==='heading'?'h2':'p';
  return `<${tag} data-block="${b.id}"${b.type==='bullet'?' class="bullet"':''}${br}>${text}</${tag}>`;
 }
-export function renderBook(m,articleId=null){
+export function renderBook(m,articleId=null,{includeCovers=true}={}){
  const articles=m.articles.filter(a=>!articleId||a.id===articleId);
  const body=articles.map(a=>`<article class="${a.className}" id="${a.id}"><header><h1>${esc(a.title)}</h1>${a.author?`<p class="author">${esc(a.author)}</p>`:''}</header>${a.blocks.map(blockHtml).join('\n')}</article>`).join('\n');
  const toc=m.groups.map(g=>`<section class="toc-group"><h2>${esc(g.title)}</h2>${g.articles.map(id=>{const a=m.articles.find(a=>a.id===id);return `<a href="#${id}"><span>${esc(a.title)}</span></a>`}).join('')}</section>`).join('');
- return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>${esc(m.title)}</title><link rel="stylesheet" href="../styles/book.css"><style>.stack .pictures img{display:block;margin:3mm auto}figure.stack{break-inside:auto}</style></head><body>${articleId?'':`<section class="cover"><img src="../${esc(m.front)}" alt="表紙"></section><nav class="toc"><h1>目次</h1>${toc}</nav>`}${body}${articleId?'':`<section class="cover back"><img src="../${esc(m.back)}" alt="裏表紙"></section>`}</body></html>`;
+ return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>${esc(m.title)}</title><link rel="stylesheet" href="../styles/book.css"><style>.stack .pictures img{display:block;margin:3mm auto}figure.stack{break-inside:auto}</style></head><body>${articleId?'':`${includeCovers?`<section class="cover"><img src="../${esc(m.front)}" alt="表紙"></section>`:''}<nav class="toc"><h1>目次</h1>${toc}</nav>`}${body}${articleId||!includeCovers?'':`<section class="cover back"><img src="../${esc(m.back)}" alt="裏表紙"></section>`}</body></html>`;
 }
 export async function atomic(file,content){await fs.mkdir(path.dirname(file),{recursive:true});const tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,content,'utf8');await fs.rename(tmp,file);}
 export async function materialize(root,model){await atomic(path.join(root,'manuscripts/book.html'),renderBook(model));}

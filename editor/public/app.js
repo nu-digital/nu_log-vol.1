@@ -57,8 +57,8 @@ $('#preview-frame').addEventListener('load',()=>{clearInterval(previewPoll);let 
 function undoChange(forward=false){const from=forward?redo:undo,to=forward?undo:redo;if(!from.length)return;to.push(serialize());model=JSON.parse(from.pop());editKey=null;stateChanged();renderNav();renderEditor();}
 async function pollPdf(){
  const job=await api('/api/job');$('#pdf-log').textContent=job.log||'';
- if(job.status==='running'){$('#pdf-status').textContent='全冊を組版してPDFを作成しています。1〜2分ほどかかる場合があります。';pdfTimer=setTimeout(()=>pollPdf().catch(e=>toast(e.message)),1500)}
- else{$('#export').disabled=false;if(job.status==='done'){$('#pdf-status').textContent='PDFができました。保存時点の全冊が出力されています。';$('#pdf-download').hidden=false;$('#pdf-download').href='/output/nu_log.pdf?t='+Date.now()}else{$('#pdf-status').textContent='PDF出力に失敗しました。詳細を確認し、もう一度お試しください。';$('#pdf-details').open=true;}}
+ if(job.status==='running'){$('#pdf-status').textContent=(job.includeCovers===false?'表紙・裏表紙なしで':'全冊を')+'組版してPDFを作成しています。1〜2分ほどかかる場合があります。';pdfTimer=setTimeout(()=>pollPdf().catch(e=>toast(e.message)),1500)}
+ else{$('#export').disabled=false;if(job.status==='done'){$('#pdf-status').textContent=job.includeCovers===false?'表紙・裏表紙なしのPDFができました。目次と本文を出力しました。':'PDFができました。保存時点の全冊が出力されています。';$('#pdf-download').hidden=false;$('#pdf-download').href=(job.url||'/output/nu_log.pdf')+'?t='+Date.now()}else{$('#pdf-status').textContent='PDF出力に失敗しました。詳細を確認し、もう一度お試しください。';$('#pdf-details').open=true;}}
 }
 $('#articles').addEventListener('click',e=>{const b=e.target.closest('[data-article]');if(!b)return;articleId=b.dataset.article;selected=null;coverMode=false;renderNav();renderEditor();$('#article-editor').scrollTop=0;refreshPreview().catch(e=>toast(e.message));});
 $('#search').addEventListener('input',renderNav);
@@ -97,7 +97,7 @@ $('#save').onclick=()=>save().catch(e=>toast(e.message));
 $('#covers').onclick=()=>{coverMode=true;renderNav();renderEditor();refreshPreview().catch(e=>toast(e.message));};
 for(const v of ['article','book'])$('#view-'+v).onclick=()=>{mode=v;$('#view-article').classList.toggle('active',v==='article');$('#view-book').classList.toggle('active',v==='book');refreshPreview().catch(e=>toast(e.message));};
 $('#refresh-preview').onclick=()=>refreshPreview().catch(e=>toast(e.message));$('#auto-preview').onchange=()=>{if($('#auto-preview').checked)refreshPreview().catch(e=>toast(e.message));else clearTimeout(previewTimer)};
-$('#export').onclick=async()=>{try{if(dirty())await save();$('#pdf-dialog').showModal();$('#pdf-download').hidden=true;$('#pdf-details').open=false;$('#pdf-status').textContent='書き出しを開始しています…';$('#export').disabled=true;await api('/api/build',{revision:rev});await pollPdf();}catch(e){$('#export').disabled=false;$('#pdf-status').textContent=e.message;toast(e.message);}};
+$('#export').onclick=async()=>{try{if(dirty())await save();$('#pdf-dialog').showModal();$('#pdf-download').hidden=true;$('#pdf-details').open=false;$('#pdf-status').textContent='書き出しを開始しています…';$('#export').disabled=true;await api('/api/build',{revision:rev,includeCovers:$('#pdf-scope').value!=='no-covers'});await pollPdf();}catch(e){$('#export').disabled=false;$('#pdf-status').textContent=e.message;toast(e.message);}};
 $('#close-pdf').onclick=()=>$('#pdf-dialog').close();
 window.addEventListener('beforeunload',e=>{if(model&&dirty()){e.preventDefault();e.returnValue='';}});
 document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!model)return;if(e.key.toLowerCase()==='s'){e.preventDefault();save().catch(e=>toast(e.message));}if(e.key.toLowerCase()==='z'){e.preventDefault();undoChange(e.shiftKey);}if(e.key.toLowerCase()==='y'){e.preventDefault();undoChange(true);}});

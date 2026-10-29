@@ -7,14 +7,17 @@ import {importBook,renderBook,validate,revision} from './model.mjs';
 const root=process.cwd();
 const model=await importBook(root);
 const allowed=new Set(JSON.parse(await fs.readFile('reports/images.json','utf8')).map(x=>x.file));
-test('all fourteen articles and ninety-three body images survive the import',()=>{
- assert.equal(model.articles.length,14);
- assert.equal(model.articles.flatMap(a=>a.blocks).reduce((n,b)=>n+(b.images?.length||0),0),93);
+const source=JSON.parse(await fs.readFile('editor/data/book.json','utf8'));
+const imageCount=source.articles.flatMap(a=>a.blocks).reduce((n,b)=>n+(b.images?.length||0),0);
+test('all saved articles and body images survive the import',()=>{
+ assert.equal(model.articles.length,source.articles.length);
+ assert.equal(model.articles.flatMap(a=>a.blocks).reduce((n,b)=>n+(b.images?.length||0),0),imageCount);
  const d=new JSDOM(renderBook(model)).window.document;
- assert.equal(d.querySelectorAll('img').length,95);
- assert.equal(d.querySelectorAll('.toc-group a').length,14);
+ assert.equal(d.querySelectorAll('img').length,imageCount+2);
+ assert.equal(d.querySelectorAll('.toc-group a').length,source.groups.reduce((n,g)=>n+g.articles.length,0));
 });
 test('rendering retains text and URLs through a second import',async()=>{
+ await fs.mkdir(path.join(root,'tmp'),{recursive:true});
  const temp=await fs.mkdtemp(path.join(root,'tmp/editor-roundtrip-'));
  await fs.mkdir(path.join(temp,'manuscripts'));await fs.writeFile(path.join(temp,'manuscripts/book.html'),renderBook(model));
  const round=await importBook(temp);
@@ -34,4 +37,15 @@ test('out-of-range controls, unknown files, and unsafe links are rejected',()=>{
  const next=structuredClone(model),b=next.articles[0].blocks.find(x=>x.type==='figure');
  b.width=200;assert.throws(()=>validate(next,allowed));b.width=100;b.images[0].src='../source/google-doc.json';assert.throws(()=>validate(next,allowed));
  const link=structuredClone(model);link.articles[0].blocks.push({id:'unsafe',type:'reference',text:'x',url:'javascript:alert(1)',displayUrl:'x',breakBefore:false});assert.throws(()=>validate(link,allowed));
+});
+
+test('cover-free output retains the complete contents and leaves the source unchanged',()=>{
+ const before=revision(model);
+ const full=new JSDOM(renderBook(model)).window.document;
+ const bodyOnly=new JSDOM(renderBook(model,null,{includeCovers:false})).window.document;
+ assert.equal(full.querySelectorAll('.cover').length,2);
+ assert.equal(bodyOnly.querySelectorAll('.cover').length,0);
+ assert.equal(bodyOnly.querySelector('.toc').outerHTML,full.querySelector('.toc').outerHTML);
+ assert.deepEqual([...bodyOnly.querySelectorAll('article')].map(a=>a.outerHTML),[...full.querySelectorAll('article')].map(a=>a.outerHTML));
+ assert.equal(revision(model),before);
 });

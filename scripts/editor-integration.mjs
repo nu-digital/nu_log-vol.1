@@ -2,11 +2,14 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {spawn,execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
-const root=process.cwd(),temp=await fs.mkdtemp(path.join(root,'tmp/editor-integration-'));
+const root=process.cwd();
+await fs.mkdir(path.join(root,'tmp'),{recursive:true});
+const temp=await fs.mkdtemp(path.join(root,'tmp/editor-integration-'));
 for(const folder of ['manuscripts','reports'])await fs.mkdir(path.join(temp,folder));
 for(const f of ['manuscripts/book.html','reports/images.json','reports/image-dimensions.json'])await fs.copyFile(path.join(root,f),path.join(temp,f));
-const base='http://127.0.0.1:4178';let child;
-async function start(){child=spawn(process.execPath,[path.join(root,'editor/server.mjs')],{cwd:temp,env:{...process.env,NU_LOG_WORKSPACE:temp,NU_LOG_PORT:'4178'},windowsHide:true,stdio:'pipe'});for(let i=0;i<40;i++){try{const r=await fetch(base+'/api/state');if(r.ok)return await r.json()}catch{}await new Promise(r=>setTimeout(r,200));}throw Error('Test server failed to start');}
+const port=process.env.NU_LOG_TEST_PORT||'4189';
+const base=`http://127.0.0.1:${port}`;let child;
+async function start(){child=spawn(process.execPath,[path.join(root,'editor/server.mjs')],{cwd:temp,env:{...process.env,NU_LOG_WORKSPACE:temp,NU_LOG_PORT:port},windowsHide:true,stdio:'pipe'});for(let i=0;i<40;i++){try{const r=await fetch(base+'/api/state');if(r.ok)return await r.json()}catch{}await new Promise(r=>setTimeout(r,200));}throw Error('Test server failed to start');}
 async function stop(){child.kill();await new Promise(r=>child.once('close',r));}
 try{
  let s=await start();const original=s.model.articles[0].title;

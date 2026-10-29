@@ -57,14 +57,19 @@ const server=http.createServer(async(req,res)=>{
    if(p==='/api/build'){
     if(busy)throw fail(409,'PDF出力中です。');
     if(b.revision!==rev)throw fail(409,'先に変更を保存してください。');
-    busy=true;job={status:'running',startedAt:new Date().toISOString(),log:''};
+    const includeCovers=b.includeCovers!==false;
+    const filename=includeCovers?'nu_log.pdf':'nu_log-no-covers.pdf';
+    busy=true;job={status:'running',includeCovers,url:'/output/'+filename,startedAt:new Date().toISOString(),log:''};
     const browser=process.env.NU_LOG_BROWSER||'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+    try{
     await fs.mkdir(path.join(root,'output/editor'),{recursive:true});
-    const child=spawn(process.execPath,[path.join(here,'../node_modules/@vivliostyle/cli/dist/cli.js'),'build','-o','output/editor/nu_log.pdf','--executable-browser',browser],{cwd:root,windowsHide:true});
+    if(!includeCovers)await atomic(path.join(root,'manuscripts/book-no-covers.html'),renderBook(model,null,{includeCovers:false}));
+    const child=spawn(process.execPath,[path.join(here,'../node_modules/@vivliostyle/cli/dist/cli.js'),'build','-c',includeCovers?'vivliostyle.config.js':'vivliostyle.no-covers.config.js','-o','output/editor/'+filename,'--executable-browser',browser],{cwd:root,windowsHide:true});
     child.stdout.on('data',x=>job.log=(job.log+x).slice(-8000));child.stderr.on('data',x=>job.log=(job.log+x).slice(-8000));
     child.on('error',e=>{job={...job,status:'error',message:e.message};busy=false;});
     child.on('close',code=>{job={...job,status:code===0?'done':'error',finishedAt:new Date().toISOString(),revision:rev};busy=false;});
     return json(res,202,job);
+    }catch(e){busy=false;job={...job,status:'error',message:e.message};throw e;}
    }
    throw fail(404,'操作が見つかりません。');
   }
@@ -75,7 +80,7 @@ const server=http.createServer(async(req,res)=>{
   if(p.startsWith('/viewer/'))return await serve(res,path.join(here,'../node_modules/@vivliostyle/viewer/lib'),p.slice(8));
   if(p.startsWith('/assets/images/'))return await serve(res,path.join(root,'assets/images'),p.slice(15));
   if(p==='/styles/book.css')return await serve(res,path.join(root,'styles'),'book.css');
-  if(p==='/output/nu_log.pdf')return await serve(res,path.join(root,'output/editor'),'nu_log.pdf');
+  if(['/output/nu_log.pdf','/output/nu_log-no-covers.pdf'].includes(p))return await serve(res,path.join(root,'output/editor'),p.slice(8));
   if(['/','/app.js','/app.css'].includes(p))return await serve(res,path.join(here,'public'),p==='/'?'index.html':p.slice(1));
   throw fail(404,'見つかりません。');
  }catch(e){json(res,e.status|| (e.code==='ENOENT'?404:400),{error:e.message});}

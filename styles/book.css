@@ -1,0 +1,51 @@
+:root { --brand: #014aad; --ink: #22272e; }
+@page { size: 182mm 257mm; margin: 15mm 16mm 18mm; @bottom-center { content: counter(page); font-family: "Yu Gothic", sans-serif; font-size: 9pt; color: #525a64; } }
+@page :left { margin-left: 15mm; margin-right: 18mm; }
+@page :right { margin-left: 18mm; margin-right: 15mm; }
+@page cover { margin: 0; @bottom-center { content: none; } }
+html { font-family: "Yu Gothic", "Meiryo", sans-serif; font-size: 10pt; line-height: 1.8; color: var(--ink); line-break: strict; overflow-wrap: anywhere; }
+body { margin: 0; }
+.cover { page: cover; width: 182mm; height: 257mm; break-after: page; }
+.cover img { display: block; width: 182mm; height: 257mm; object-fit: contain; }
+.back { break-before: page; break-after: auto; background: var(--brand); }
+.chapter { break-before: page; }
+header { margin: 0 0 8mm; padding: 6mm 0 5mm; border-top: 2mm solid var(--brand); border-bottom: .3mm solid #c8d3e2; break-inside: avoid; break-after: avoid; }
+h1 { font-size: 23pt; font-weight: 700; line-height: 1.45; margin: 0; letter-spacing: .015em; color: var(--brand); }
+.author { margin: 3mm 0 0; font-size: 10pt; text-align: right; }
+p { margin: 0 0 .7em; text-align: justify; widows: 2; orphans: 2; }
+h2 { font-size: 13pt; line-height: 1.55; margin: 6mm 0 3mm; color: var(--brand); break-after: avoid; break-inside: avoid; font-weight: 700; }
+.bullet { padding-left: 1em; text-indent: -1em; margin-bottom: .25em; }
+figure { margin: 4mm 0 5mm; break-inside: avoid; }
+.pictures { text-align: center; }
+figure img { display: inline-block; vertical-align: middle; width: auto; height: auto; max-width: 100%; max-height: 88mm; object-fit: contain; }
+figure img.portrait { max-height: 80mm; }
+.pair .pictures { display: flex; align-items: center; justify-content: center; gap: 4mm; }
+.pair img { width: calc((100% - 4mm) / 2); max-height: 70mm; object-fit: contain; }
+.qr img { width: 28mm; height: 28mm; }
+.qr .pictures { justify-content: center; gap: 12mm; }
+figcaption { font-size: 8.8pt; line-height: 1.6; color: #485361; text-align: left; margin: 2mm 0 0; }
+a { color: inherit; text-decoration: none; }
+p a { overflow-wrap: anywhere; }
+.toc { break-before: page; break-after: page; }
+.toc>h1 { margin: 3mm 0 7mm; }
+.toc-group { break-inside: avoid; margin: 0 0 3mm; }
+.toc-group h2 { font-size: 11pt; margin: 3mm 0 1mm; border-bottom: .25mm solid #cbd5e1; padding-bottom: 1mm; }
+.toc-group>a { display: block; position: relative; padding: 1.4mm 10mm 1.4mm 0; font-size: 9.5pt; line-height: 1.6; }
+.toc-group>a::after { content: target-counter(attr(href),page); position: absolute; right: 0; bottom: 1.4mm; color: var(--brand); }
+.reference { break-inside: avoid; margin-bottom: 2mm; }
+.reference a { display: block; font-weight: 700; }
+.reference span { display: block; font-size: 8.8pt; color: #485361; }
+/* First proof refinements: calmer paragraph rhythm and compact photo groups. */
+html { font-family: "Noto Sans JP", "Yu Gothic", sans-serif; line-height: 1.72; }
+p { margin-bottom: .45em; }
+header { margin-bottom: 6mm; padding-top: 4mm; padding-bottom: 4mm; }
+figure { margin-top: 3mm; margin-bottom: 4mm; }
+figure img { max-height: 68mm; }
+figure img.portrait { max-height: 65mm; }
+.pair img { max-height: 60mm; }
+.ch-8 figure img { max-height: 125mm; }
+.ch-6 .pair img { max-height: 52mm; }
+.ch-12 .pair img { max-height: 64mm; }
+.ch-7 img[src$="07-02.webp"] { max-height: 43mm; }
+.ch-5 { line-height: 1.65; }
+.ch-5 p { margin-bottom: .25em; }

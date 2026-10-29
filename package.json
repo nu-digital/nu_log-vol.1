@@ -1,0 +1,16 @@
+{
+  "name": "nu-log",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "vivliostyle preview",
+    "build": "vivliostyle build",
+    "prepare:source": "node scripts/prepare.mjs",
+    "editor": "node editor/server.mjs",
+    "typeset": "node scripts/typeset.mjs",
+    "test:editor": "node --test editor/model.test.mjs"
+  },
+  "devDependencies": {
+    "@vivliostyle/cli": "11.4.0"
+  }
+}

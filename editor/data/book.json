@@ -1494,7 +1494,7 @@
           "id": "745b8c78-b830-448b-84c6-79bce842ed34",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "何を置いておくのがいいのが最適か分からないので普通に撮ったものと、"
+          "text": "何を載せるのがよいか分からないので普通に撮ったものと、"
         },
         {
           "id": "24c81611-8bfb-4768-ab44-d97db3558bd3",
@@ -1543,6 +1543,20 @@
           "qr": false,
           "width": 100,
           "maxHeight": null
+        },
+        {
+          "id": "6ca12024-23dd-4a62-9219-978c36dee1d2",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "使用アバター　オリジナル3Dモデル「セイラン」"
+        },
+        {
+          "id": "d623d83b-564a-4d63-b23b-aff0f9c57526",
+          "type": "reference",
+          "breakBefore": false,
+          "text": "セイラン 配布・販売ページ",
+          "url": "https://booth.pm/ja/items/6359289",
+          "displayUrl": "https://booth.pm/ja/items/6359289"
         }
       ]
     },
@@ -3196,7 +3210,7 @@
           "id": "a0d917d8-1f71-42c9-bb29-8343612e1c34",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "音楽学科に所属する私が、この数か月でAIのコーディング支援を用いて作ってきたものを紹介します。以前なら「あったらいいのに」で終わっていたツールが、アイデアさえあれば形にできる時代になりました。作ったもののうちいくつかについて軽く記したいと思います。。"
+          "text": "音楽学科に所属する私が、この数か月でAIのコーディング支援を用いて作ってきたものを紹介します。以前なら「あったらいいのに」で終わっていたツールが、アイデアさえあれば形にできる時代になりました。作ったもののうちいくつかについて軽く記したいと思います。"
         },
         {
           "id": "dbea16ed-2408-4657-bece-bcfdeb887361",
@@ -4327,6 +4341,6 @@
       ]
     }
   ],
-  "front": "assets/images/01-02.webp",
-  "back": "assets/images/01-01.webp"
+  "front": "assets/images/cover-spread.png",
+  "back": "assets/images/cover-spread.png"
 }

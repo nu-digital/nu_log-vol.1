@@ -1873,5 +1873,12 @@
     "file": "assets/images/18-02.webp",
     "bytes": 45450,
     "sha256": "1b34e8dd501ee4db9ae55272fbd524317fb4811158f9a45f56d3fa6ec637b72b"
+  },
+  {
+    "tab": "表紙,裏",
+    "objectId": "local-cover-spread",
+    "file": "assets/images/cover-spread.png",
+    "bytes": 3272874,
+    "sha256": "e376185983d89481d2f738789f75ea43144c0e6fec9c5f00748f907e93a9e897"
   }
 ]

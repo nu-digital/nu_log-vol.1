@@ -6,6 +6,7 @@ source/
 editor/data/*
 !editor/data/book.json
 assets/images/*.png
+!assets/images/cover-spread.png
 assets/images/*.jpg
 assets/images/*.jpeg
 assets/images/*.gif

@@ -2170,7 +2170,7 @@
         },
         {
           "id": "1de67de8-b1ab-495e-876a-8ef0d2f13ccb",
-          "breakBefore": true,
+          "breakBefore": false,
           "type": "heading",
           "text": "準備したもの"
         },
@@ -2278,7 +2278,7 @@
         },
         {
           "id": "0e32d804-cf47-4b40-99f5-520a9fae73d4",
-          "breakBefore": true,
+          "breakBefore": false,
           "type": "heading",
           "text": "計算ツール"
         },
@@ -2290,21 +2290,10 @@
         },
         {
           "id": "35122085-a34f-4146-8e25-a6011625e0bd",
+          "type": "code",
           "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/09-02.webp",
-              "className": "",
-              "width": 518,
-              "height": 336
-            }
-          ],
           "caption": "図1　エージェントに利用させるツール",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
+          "text": "# ツール群の定義\ndef f1(a, b):\n    return int(a + b)\n\ndef f2(a, b):\n    if b == 0:\n        return \"INVALID\"\n    return int(a / b)"
         },
         {
           "id": "18226cbc-f5c3-46a1-a86c-48ab3861fc32",
@@ -2329,6 +2318,13 @@
           "breakBefore": false,
           "type": "paragraph",
           "text": "このように、LLMによる指示の解釈、計算ツールの実行、画像の取得を一連の処理として組み合わせることを目指しました。しかし、Google Colab上でのWebカメラの起動や画像取得後の連携がうまくいかず、最終的に画像から数式を読み取り、計算結果を返す機能については完成に至りませんでした。"
+        },
+        {
+          "id": "c8075c27-cae8-4088-86ce-8ec6355dd19e",
+          "type": "code",
+          "breakBefore": false,
+          "caption": "図2のコード部分（抜粋。前後の処理は省略）",
+          "text": "if photo_match:\n    path = take_photo()\n    messages.append(f\"assistant: {response}\")\n    messages.append(f\"image_path:{path}\")\n    messages.append(f\"agent: 画像をキャプチャしました。内容を解析してください。\")\nelif f1_match:\n    res = f1(float(f1_match.group(1)), float(f1_match.group(2)))\n    messages.append(f\"assistant: {response}\")\n    messages.append(f\"agent: {res}\")\nelif f2_match:\n    res = f2(float(f2_match.group(1)), float(f2_match.group(2)))\n    messages.append(f\"assistant: {response}\")\n    messages.append(f\"agent: {res}\")\nelif message_match:\n    print(message_match.group(1))\n    break\nelse:\n    print(response)\n    break\n\nuser_input = input(\"指示を入力してください（例: 写真を撮って中にある式を計算して）: \")\nif user_input:\n    agent_loop(user_input)"
         },
         {
           "id": "3e2681f5-1784-43b1-9914-cad6a7a13988",
@@ -2369,6 +2365,215 @@
       ]
     },
     {
+      "id": "chapter-18",
+      "className": "chapter ch-18",
+      "title": "AIエージェントと作る、本のためのエディター",
+      "author": "yurarara, astra",
+      "blocks": [
+        {
+          "id": "e1934446-4717-443e-b1c2-6a802c66949d",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "この本を作るために、本を編集する道具も作りました。原稿と画像を取り込み、記事を選んで直し、B5の紙面を確認してPDFにする。その作業をまとめたローカルエディターが「nu_log 編集室」です。本稿では、yurararaが編集方針を出し、AIエージェントのastraとやり取りしながら道具と紙面を更新した過程を紹介します。"
+        },
+        {
+          "id": "0ac39a15-339a-4104-8881-bb1b3609264f",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "出発点は「このフォルダで編集する。エディターの準備をして」という依頼でした。最初からすべての仕様が決まっていたわけではありません。編集を進めるうちに必要になった機能を足し、実際の原稿で使い、合わない部分を戻す。完成したツールを使うだけでなく、制作に合わせてツール自体も変える運用になりました。"
+        },
+        {
+          "id": "201ddc2d-d184-4243-a564-da58899dcfbf",
+          "type": "heading",
+          "breakBefore": false,
+          "text": "1　原稿・編集画面・組版をつなぐ"
+        },
+        {
+          "id": "934c4d6c-dfcb-4e27-88bc-87a5bfaf54b3",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "画面は、左の記事一覧、中央の編集欄、右の組版プレビューに分かれています。段落や見出し、写真、キャプションをブロックとして扱い、順序や幅、高さ、改ページ位置を調整できます。紙面の確認にはVivliostyleを使い、記事単独と全冊を切り替えます。"
+        },
+        {
+          "id": "e43d4d78-0fbb-4854-8e58-eb18a0130ce4",
+          "type": "figure",
+          "breakBefore": false,
+          "images": [
+            {
+              "src": "assets/images/18-01.webp",
+              "className": "",
+              "width": 2250,
+              "height": 1500
+            }
+          ],
+          "caption": "図1　nu_log 編集室の実画面。左で記事を選び、中央で編集し、右でB5の組版を確認する。本記事追加前に撮影。",
+          "layout": "single",
+          "qr": false,
+          "width": 100,
+          "maxHeight": 100
+        },
+        {
+          "id": "d740123e-e571-4ddc-93dd-2b1a7028c7c9",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "編集の正本は editor/data/book.json です。画面で保存した内容から manuscripts/book.html を生成し、styles/book.css と合わせて組版します。Node.jsのローカルサーバーが保存とプレビュー、PDF出力をつなぎます。見た目の調整と原稿のデータを分けることで、本文を保ったままレイアウトを変更しやすくしています。"
+        },
+        {
+          "id": "73db1e17-0b60-4721-868f-3b61fd83cf41",
+          "type": "code",
+          "breakBefore": false,
+          "text": "編集画面\n  ↓ 保存\neditor/data/book.json  ← 原稿の正本\n  ↓ HTML生成\nmanuscripts/book.html ＋ styles/book.css\n  ↓ Vivliostyleで組版\n記事・全冊のプレビュー ／ PDF",
+          "caption": "原稿から紙面までの流れ。生成済みHTMLだけを直すと、次の生成時に変更が失われるため、原稿側を更新する。"
+        },
+        {
+          "id": "1e5ef4d7-f333-4d1e-b295-dd1f16249665",
+          "type": "heading",
+          "breakBefore": false,
+          "text": "2　使いながら仕様を変える"
+        },
+        {
+          "id": "8b260c95-839f-4b43-b6ac-d197204e2130",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "途中で「表紙と裏面なしのPDFも出したい」という要望が出ました。そこで、同じ原稿から表紙・裏表紙の有無を選んで出力する機能を追加しました。単に完成済みPDFの両端を削るのではなく、目次と本文を残して再組版します。原稿を二重管理せず、用途に応じた出力を選べるようになりました。"
+        },
+        {
+          "id": "50a91436-cb57-4fc7-99e3-afed87647aca",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "記事の増減も、固定のHTMLを毎回手直しする方法から、エディター上で章を追加・削除する方法に変えました。章には目次の分類や著者を指定できます。執筆メモは紙面に出さず、下書きの章は記事単独では確認できても全冊やPDFには含めない、という運用もできるようにしています。"
+        },
+        {
+          "id": "e315237c-4196-4aad-aaa3-a778a70fa255",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "仕様変更は、機能を増やすことだけではありません。「機能は今のままで、記事の内容は戻したい」という依頼もありました。編集機能の変更と掲載内容の変更を分けて扱う必要があります。どの機能を残すか、どの記事を戻すかを言葉にして指定できることが、こうした進め方では大切でした。"
+        },
+        {
+          "id": "e0ae0486-9079-491d-b9ae-deb4defc34af",
+          "type": "heading",
+          "breakBefore": false,
+          "text": "3　更新する範囲を決める"
+        },
+        {
+          "id": "f369a6e7-7e23-4d17-8816-74e886662269",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "複数人で作る本では、後から届いたファイルが、すべての箇所で最新とは限りません。今回もlookフォルダに置かれた原稿から、変更を依頼した個人ページだけを反映し、それ以外は手元の原稿を維持する作業がありました。ファイル全体の置き換えではなく、対象の記事と差分を確認して取り込みました。"
+        },
+        {
+          "id": "65797c3e-024f-411c-9494-54c1997d21fc",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "AIエージェントへの依頼でも、「見やすくして」だけでなく、「文章は変えずに、見出しと図の配置を整えて」と変更の範囲を伝えると、確認する基準がはっきりします。ALMAさんの記事では「概要」などを小見出しにし、図の位置を調整しました。本文の推敲と紙面整理を混ぜないことが、著者の文章を守るうえでも役立ちました。"
+        },
+        {
+          "id": "568b3ae4-3186-4065-bad7-f78c65c3d35b",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "保存の履歴は editor/data/history/ に残り、画面上では元に戻す・やり直す操作も使えます。リポジトリのGit差分と合わせて、何を変えたかを確認できます。ただし、画面内の操作履歴、ローカルの保存履歴、Gitへのコミットは別のものです。エディターで保存しただけではGitHubへのpushにはなりません。"
+        },
+        {
+          "id": "63561202-da6c-4178-b5f5-82fc2788561b",
+          "type": "heading",
+          "breakBefore": false,
+          "text": "4　画像を取得して、紙面を確かめる"
+        },
+        {
+          "id": "8976ffdb-e08c-4e4e-9bb3-7fe3a492340a",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "コードが動き、HTMLが生成できても、それだけで読みやすい本になるわけではありません。ブラウザーで組版結果を開き、スクリーンショットを取得して確認しました。小さい文字、余白の偏り、図と説明の離れ方、ページの途中で切れるコードなどは、実際の紙面を見ると気づきやすくなります。"
+        },
+        {
+          "id": "796e55e3-b163-4a22-b3d2-03cd3118d9b2",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "しゃまさんの記事では、画像に写っていたPythonコードを、編集・コピーできるコードブロックに置き換えました。実行画面は画像で残し、コードは文字として組版します。画像にない前後の処理を補って完成したプログラムに見せることはせず、抜粋であることを添えています。"
+        },
+        {
+          "id": "0c04f9bf-b75a-460c-bc86-5081ea1dd031",
+          "type": "figure",
+          "breakBefore": false,
+          "images": [
+            {
+              "src": "assets/images/18-02.webp",
+              "className": "",
+              "width": 846,
+              "height": 903
+            }
+          ],
+          "caption": "図2　実際の確認に使った組版画像。コードを文字化し、実行画面を分けて掲載。コードブロックがページ途中で分断されないよう調整した。",
+          "layout": "single",
+          "qr": false,
+          "width": 100,
+          "maxHeight": 145
+        },
+        {
+          "id": "fb13135a-5594-4cd8-b7ad-60c11b0ddde2",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "最初の確認では、見出しごとの強制改ページで大きな余白ができたり、コードが次のページに分かれたりしました。そこで改ページ指定を見直し、コードブロックの途中での分割を避けるようにしました。画像を取得して終わりではなく、見つけた問題を直し、もう一度表示して確認するところまでが一つの作業です。"
+        },
+        {
+          "id": "fa7c4063-84c4-44ab-b845-7eacf77e5614",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "asImpulseさんの最後のイラストでは、見開き案から、縦長の絵を切らずに縦1ページへ大きく載せる方針に決まりました。このような判断には、元画像の縦横比や、綴じ目との関係も関わります。記事単独のプレビューは調整に便利ですが、本全体でのページ番号や左右の並びは全冊で改めて見る必要があります。"
+        },
+        {
+          "id": "12595e42-b603-4b5e-9bbc-65a10ce668be",
+          "type": "heading",
+          "breakBefore": false,
+          "text": "5　AIエージェントと作る利点と、残る判断"
+        },
+        {
+          "id": "5afac2d4-e0b7-4c69-867b-003da79303e4",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "今回便利だったのは、要望を説明する相手が、実装や確認の作業までつなげられることでした。既存のソースを読み、必要な箇所を修正し、テストを実行し、画面を開いて結果を確認する。個別には小さな作業でも、それらを往復しながら進められることで、編集途中の変更を試しやすくなりました。"
+        },
+        {
+          "id": "92af2662-2846-4402-859b-209a2fe11c5d",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "一方で、テストが通ったことと、紙面が読みやすいことは別です。このリポジトリでは原稿の読み込み・再生成、画像設定、目次や下書きの扱いなどをテストしていますが、図の大きさやページの余白は画像での確認も必要でした。また、何を掲載するか、著者の文章をどこまで変えるか、絵をどう見せたいかは、編集側が決める必要があります。"
+        },
+        {
+          "id": "650cda0c-8944-4a60-87b3-cf8bec4e6614",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "この事例では、一般的な制作方法との作業時間の比較まではしていません。それでも、「不便なところが見つかったら、その場で道具を直して使う」という進め方は実践できました。原稿と履歴を残し、変更範囲を伝え、実際の出力で確かめる。AIエージェントを活用するうえでも、この地道な往復が本を形にする土台になっています。"
+        },
+        {
+          "id": "65d99e2f-02da-429b-ae08-df1e608a3191",
+          "type": "heading",
+          "breakBefore": false,
+          "text": "リポジトリと実装の入口"
+        },
+        {
+          "id": "ac252b07-b8ec-406a-9362-18aaf766eb2c",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "以下は本書とエディターのリポジトリです。本稿は2026年11月21日時点の手元の実装・制作記録をもとにしています。公開側への反映時期によっては、掲載した画面や機能と差があります。"
+        },
+        {
+          "id": "435c491e-03f4-4e5a-b552-539906c1bb80",
+          "type": "reference",
+          "breakBefore": false,
+          "text": "nu-digital / nu_log-vol.1",
+          "url": "https://github.com/nu-digital/nu_log-vol.1",
+          "displayUrl": "https://github.com/nu-digital/nu_log-vol.1"
+        },
+        {
+          "id": "4c35895d-0e50-47fa-ae03-f8121f9e77ef",
+          "type": "paragraph",
+          "breakBefore": false,
+          "text": "editor/public/：編集画面　／　editor/server.mjs：保存・出力の窓口　／　editor/model.mjs：原稿の検証とHTML生成　／　styles/book.css：紙面のスタイル　／　editor/model.test.mjs：編集データと出力の検証"
+        }
+      ]
+    },
+    {
       "id": "chapter-10",
       "className": "chapter ch-10",
       "title": "Blender勢のためのUnity連携ガイド",
@@ -2394,7 +2599,7 @@
         },
         {
           "id": "91a13f77-f72b-4f1d-aa46-d8cb38b106e7",
-          "breakBefore": false,
+          "breakBefore": true,
           "type": "heading",
           "text": "2. 座標系とモデルの回転"
         },
@@ -2423,8 +2628,32 @@
           "text": "特に、アーマチュアを使用したモデルでは注意が必要です。メッシュとアーマチュアを個別に回転させると、親子関係やボーンの変換に影響し、アニメーションが正常に動作しなくなる場合があります。メッシュとアーマチュアの関係を確認し、必要に応じて回転を適用したうえで、Unityにインポートして動作を検証することが重要です。"
         },
         {
-          "id": "d4aca2a4-aaee-4b36-b406-836d66589c36",
+          "id": "c523e258-a149-4b4f-8e0b-8e74ac24d07e",
           "breakBefore": false,
+          "type": "figure",
+          "images": [
+            {
+              "src": "assets/images/10-01.webp",
+              "className": "",
+              "width": 580,
+              "height": 356
+            },
+            {
+              "src": "assets/images/10-02.webp",
+              "className": "portrait",
+              "width": 278,
+              "height": 350
+            }
+          ],
+          "caption": "",
+          "layout": "pair",
+          "qr": false,
+          "width": 100,
+          "maxHeight": null
+        },
+        {
+          "id": "d4aca2a4-aaee-4b36-b406-836d66589c36",
+          "breakBefore": true,
           "type": "heading",
           "text": "3. スケールの調整"
         },
@@ -2453,8 +2682,32 @@
           "text": "Unityでは一般的に1 Unity Unitを1メートルとして扱うため、Blender側でもゲーム内での実寸を意識して制作すると、キャラクターや建物、小物などの大きさを揃えやすくなります。"
         },
         {
-          "id": "2439d22f-9284-49e1-b3f3-4e792d801293",
+          "id": "699cf3c9-b8b7-4804-ae9e-d4e4b1bbd333",
           "breakBefore": false,
+          "type": "figure",
+          "images": [
+            {
+              "src": "assets/images/10-03.webp",
+              "className": "",
+              "width": 287,
+              "height": 296
+            },
+            {
+              "src": "assets/images/10-04.webp",
+              "className": "",
+              "width": 287,
+              "height": 268
+            }
+          ],
+          "caption": "",
+          "layout": "pair",
+          "qr": false,
+          "width": 100,
+          "maxHeight": null
+        },
+        {
+          "id": "2439d22f-9284-49e1-b3f3-4e792d801293",
+          "breakBefore": true,
           "type": "heading",
           "text": "4. 面の向きと法線"
         },
@@ -2483,8 +2736,26 @@
           "text": "さらに、法線は面の表裏だけでなく、光の当たり方や陰影にも影響します。面の向きが正しくても、法線やスムージングの設定によって不自然な陰影が発生する場合があります。そのため、Blender側で法線を確認し、Unity側でも実際にライティングを当てて見た目を検証することが重要です。"
         },
         {
-          "id": "93692e85-5174-44a5-8f62-629aad597a31",
+          "id": "f7cc4ae3-252e-46c5-a39f-034057c52b83",
           "breakBefore": false,
+          "type": "figure",
+          "images": [
+            {
+              "src": "assets/images/10-05.webp",
+              "className": "",
+              "width": 1006,
+              "height": 588
+            }
+          ],
+          "caption": "",
+          "layout": "single",
+          "qr": false,
+          "width": 100,
+          "maxHeight": null
+        },
+        {
+          "id": "93692e85-5174-44a5-8f62-629aad597a31",
+          "breakBefore": true,
           "type": "heading",
           "text": "5. テクスチャとUV展開"
         },
@@ -2513,8 +2784,26 @@
           "text": "テクスチャが正しく表示されない場合は、UV展開やマテリアルの割り当ても確認する必要があります。UV展開が適切でなければ、画像が伸びたり、意図しない位置に表示されたりします。また、UnityではシェーダーによってBase MapやNormal Mapなどの設定先が異なるため、ベイクした法線マップなどを使用する場合は、画像の種類に応じてインポート設定を確認することが重要です。"
         },
         {
-          "id": "bf56267a-3fd2-4c61-89b5-7d73a152ff09",
+          "id": "43e52359-afb5-41a5-a9e2-92477567db03",
           "breakBefore": false,
+          "type": "figure",
+          "images": [
+            {
+              "src": "assets/images/10-06.webp",
+              "className": "",
+              "width": 1180,
+              "height": 784
+            }
+          ],
+          "caption": "",
+          "layout": "single",
+          "qr": false,
+          "width": 100,
+          "maxHeight": null
+        },
+        {
+          "id": "bf56267a-3fd2-4c61-89b5-7d73a152ff09",
+          "breakBefore": true,
           "type": "heading",
           "text": "6. FBXのエクスポートとデータの受け渡し"
         },
@@ -2528,7 +2817,7 @@
           "id": "1a5b62d3-c350-4256-9fba-46a060c9bfb5",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "複数のモデルやカメラ、ライトなどが同じ.blendファイルに存在する場合、必要なオブジェクトだけをエクスポートするように設定します。また、アーマチュアを使用するモデルでは、メッシュとアーマチュアの両方が正しく含まれているかを確認します。エクスポート後は必ずUnityにインポートし、モデルの向きや大きさ、マテリアル、法線、アニメーションなどに問題がないかを検証します。"
+          "text": "複数のモデルやカメラ、ライトなどが同じ.blendファイルに存在する場合、必要なオブジェクトだけをエクスポートするように設定します。また、アーマチュアを使用するモデルでは、メッシュとアーマチュアの両方が正しく含まれているかを確認します。エ��スポート後は必ずUnityにインポートし、モデルの向きや大きさ、マテリアル、法線、アニメーションなどに問題がないかを検証します。"
         },
         {
           "id": "84b0c256-a094-42f9-ba95-2cf99372c00a",
@@ -2543,8 +2832,26 @@
           "text": "また、UnityPackageを利用すれば、モデルやテクスチャなどの関連アセットをまとめて受け渡すことができます。ただし、必要なアセットがパッケージに含まれているか、既存アセットとの依存関係に問題がないかを確認する必要があります。FBXのエクスポートからUnityでの確認、UnityPackageによる共有までを一連の工程として考えることが、共同制作の効率化につながります。"
         },
         {
-          "id": "230db71c-d0de-4110-98d5-5457043a26ad",
+          "id": "373afb2e-0f04-4bc2-8ddb-e1640a986826",
           "breakBefore": false,
+          "type": "figure",
+          "images": [
+            {
+              "src": "assets/images/10-07.webp",
+              "className": "",
+              "width": 499,
+              "height": 168
+            }
+          ],
+          "caption": "",
+          "layout": "single",
+          "qr": false,
+          "width": 100,
+          "maxHeight": null
+        },
+        {
+          "id": "230db71c-d0de-4110-98d5-5457043a26ad",
+          "breakBefore": true,
           "type": "heading",
           "text": "7. おわりに"
         },
@@ -2565,572 +2872,6 @@
           "breakBefore": false,
           "type": "paragraph",
           "text": "制作からエクスポート、インポート後の確認、データの受け渡しまでを一貫して行い、問題の原因を切り分けながら改善することで、モデルの品質だけでなく、チーム全体の制作効率も向上させることができます。"
-        }
-      ]
-    },
-    {
-      "id": "chapter-11",
-      "className": "chapter ch-11",
-      "title": "Blenderのデータを現実に！独学・前提知識ゼロから始める3Dプリント",
-      "author": "nero",
-      "blocks": [
-        {
-          "id": "29b3809f-855e-4f44-b1f1-467d0a92c702",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "ネロと申します。"
-        },
-        {
-          "id": "11261da3-b604-4bac-83e1-4836a7dca122",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "1年ほど3Dプリンターを独学・前提知識ゼロの状態で使ってきた経過と、そこで得た知見をまとめました。"
-        },
-        {
-          "id": "fa0e5e37-c115-4ca9-a781-c553523743e5",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "前提として"
-        },
-        {
-          "id": "36ad2b92-2df1-4dc6-b40f-518f53892fb8",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "このページ内で紹介することは【前提知識ゼロ】【3Dプリンター初心者】【バカ】の私が経験したことをまとめています。普通に今から3Dプリンターを始める方は絶対に別のサイトか何かを見た方がためになります。"
-        },
-        {
-          "id": "79ccee03-d52a-44b5-ab91-f081fa2523f5",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "経緯"
-        },
-        {
-          "id": "fbae7062-3601-46a8-813d-37d010637a2d",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "なぜ「製作物」を「現実」にしたくなったのか"
-        },
-        {
-          "id": "8da4d460-e3bf-4041-82e9-8d72c4a37a51",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "Blenderなどの画面の中で作り上げた立体物を、デジタル上の「見た目」だけで終わらせず、自分の手で触れられる「現実の物質」として取り出したいと思ったのがきっかけです。"
-        },
-        {
-          "id": "99ae5b78-aae2-47ed-9859-d45ba89b8801",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-04.webp",
-              "className": "",
-              "width": 1018,
-              "height": 511
-            }
-          ],
-          "caption": "こんなのとか作ってました",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "74aece10-1726-4ca8-8947-bfa10ed68d4a",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "使用機材"
-        },
-        {
-          "id": "f2f827e6-9713-49b2-99be-05471f9a78db",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "・FLASHFORGE 3"
-        },
-        {
-          "id": "0e05b64a-99c8-4485-a89c-b7d996441613",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "・CR-10 V3（カスタム済み）"
-        },
-        {
-          "id": "1247fe5e-861b-4078-9423-bcd09b449c66",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "※用途や出力サイズ、素材に応じてこの2台を使い分けて運用してきました。"
-        },
-        {
-          "id": "c16a07ea-a55e-4539-bf11-be9f5800789d",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "安定して3Dプリンターで物を作るまで"
-        },
-        {
-          "id": "7520feb0-4622-4524-abf4-739a8fd0974f",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "右も左もわからない。フィラメントとデータさえあればいけるとか思っていました。 いざ中古でFlashForgeのプリンターを購入。プラモデルが好きだったおかげで組み立てやPCの設定は余裕。データも何個か用意し、"
-        },
-        {
-          "id": "54fd0b42-8ffb-443a-b1ef-146ea34c1a69",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "「あれ？3Dプリンターって余裕？」っていうところまできたのですが――。"
-        },
-        {
-          "id": "44f56110-58c3-425b-b91a-d350e16c8403",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "フィラメント詰まり、定着しない、そして「福島の12月」とかいう凶悪な室温に苦しめられる時間が始まる……。"
-        },
-        {
-          "id": "96095784-2351-42be-9121-e84ecb21d15d",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-03.webp",
-              "className": "portrait",
-              "width": 1152,
-              "height": 1536
-            }
-          ],
-          "caption": "XYZの書かれた箱さえ印刷できない....",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "3d2a537c-3de1-48cd-bebc-593eda4971cb",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "見かねてサークルの先輩に話を聞き、ビルドプレートの温度や接着用のりの存在を教えてもらい、ようやく記念すべき最初の作品ができあがります。"
-        },
-        {
-          "id": "300170c4-bd33-4914-a8c4-c8b318570524",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-05.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "おお()",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "e8e77d5a-7d80-4cfb-9fdf-868c72508974",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "デジタル vs フィジカル：画面の見た目と「物理法則」の壁"
-        },
-        {
-          "id": "bd7ecdf6-8f48-4ccc-9cba-24e78ac34a31",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "安定して物が作れてきた中で、モデリングで気になってきたのは「現実の壁」でした。"
-        },
-        {
-          "id": "90edc74c-f1e8-464c-be70-549b557bb0d8",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "画面の中でどれだけ綺麗な見た目を作れても、3Dプリンターは「物理法則」を無視できない。"
-        },
-        {
-          "id": "db0c7ac6-38db-4ca4-b370-efd17702e894",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "そこで2点に気づき始めます。"
-        },
-        {
-          "id": "9fdd78ee-78c6-48a1-a4b6-0cbdffbcf2f6",
-          "breakBefore": false,
-          "type": "bullet",
-          "text": "・肉厚（厚み）の概念： Blender上の厚みのない平面（1ポリゴン）は現実にはプリントできない。ソリッド化や適切な厚み付けが必須となる。"
-        },
-        {
-          "id": "1e1b7088-eee9-49f6-9f30-dc8f7ad21f39",
-          "breakBefore": false,
-          "type": "bullet",
-          "text": "・重力とオーバーハング： 宙に浮く形状をどう支えるか。サポート材の設定や、ビルドプレートとの戦いが常に発生する。"
-        },
-        {
-          "id": "0cde6705-9cb9-466e-983f-3e68b16586ff",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "この問題をどうしたかというと、"
-        },
-        {
-          "id": "a2867731-9bcb-486d-8f6c-0fe0eaa45f01",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-09.webp",
-              "className": "portrait",
-              "width": 1500,
-              "height": 2000
-            }
-          ],
-          "caption": "",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "9171f538-7b21-4bb1-8e3c-1c3b726cb492",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "またもや先輩です。"
-        },
-        {
-          "id": "9d95166a-dc97-41c7-b67c-39335bf694f2",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "ツリーサポートの活用、印刷の向きの最適化を教えてもらい、"
-        },
-        {
-          "id": "39ffe2ba-b01a-4721-8b87-7ec6d1f22b7a",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "「印刷を前提としたモデリング」を学び始め、サークルや友人に印刷を頼まれ始められます。"
-        },
-        {
-          "id": "fe5d64eb-5af0-48b4-afcf-08b73e33fecb",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-16.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            },
-            {
-              "src": "assets/images/11-17.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "こんなのとか",
-          "layout": "pair",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "2f427384-daf2-471a-8c53-0a2af9605fbc",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-02.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            },
-            {
-              "src": "assets/images/11-14.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "こんなのとか....",
-          "layout": "pair",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "39b394bd-e969-46fc-a08a-5fae812429c3",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-13.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            },
-            {
-              "src": "assets/images/11-15.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "底面の曲がり　強度問題への直面もありました...",
-          "layout": "pair",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "ae867252-3e44-4426-9424-dbf4b2c0c5e6",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "CR-10 V3の導入と苦難、そしてパーツ製作へ"
-        },
-        {
-          "id": "c2c806ed-2ba3-47fd-9188-2c229e8c66b5",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "色々問題を抱えながらも作りたいもののサイズに限界を感じていたため、カスタム済みの中古で安かった、とにかく印刷サイズがでかい「CR-10 V3」を購入。"
-        },
-        {
-          "id": "cd1c8b31-d565-4d1a-8af9-901baf68b633",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "組み立てて、「門型の3Dプリンターに初挑戦！！いけんだろ」とか思っていた矢先、始まったのは定着問題、印刷時間との戦い、そして数々のエラーでした。"
-        },
-        {
-          "id": "505b013f-4b85-4351-bba3-74ef61ddaaa5",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "再びサークルの先輩へ質問。さらに動画をあさり、レベリングを知ります。"
-        },
-        {
-          "id": "91428f06-24fb-4d20-928c-8a4060bb11de",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "「オートレベリングなんてものが！神か？」"
-        },
-        {
-          "id": "2761237c-54b4-4bb3-93a3-f57aa19869a7",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "オートレベリングさえあれば俺は無敵だ！"
-        },
-        {
-          "id": "7cb04d30-0725-4446-91e9-2c34dc22d8c8",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "なんて調子に乗っていたら、"
-        },
-        {
-          "id": "834eb083-d425-435f-a888-6f01c20c1695",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "ビルドプレートのねじを調整していなかったり、フィラメントが乗らなかったりでプリンターにいじめられ、"
-        },
-        {
-          "id": "d0872c58-d172-4e0a-b3d7-540ef3da2f70",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "気づけば計89時間が経過。"
-        },
-        {
-          "id": "86747b66-805f-42bb-8777-3a32d216e711",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-10.webp",
-              "className": "portrait",
-              "width": 1080,
-              "height": 1313
-            }
-          ],
-          "caption": "",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "48f60c4d-0a01-4843-822b-42b730889e7a",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "死闘の末、やっとまともな印刷ができるようになってからは、ひたすらに自分のやりたい印刷をしていきました。"
-        },
-        {
-          "id": "ddb691f1-acd2-4327-aa68-1128fece8f31",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-11.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            },
-            {
-              "src": "assets/images/11-06.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "左：逆さツリーサポートが意外と安定...　右：おお",
-          "layout": "pair",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "760be5e3-6051-44c3-aced-97c287223791",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-08.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "おぉ（笑）",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "1f76e644-8ea7-4e72-8a00-03d2ab72cb91",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "オリジナルグッズ・パーツ制作の裏側"
-        },
-        {
-          "id": "3e117077-834c-4fee-ad59-04a3bb56f554",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "サークルの装備品やエアガン小物、コスプレ衣装の小物など、友人やサークルでの依頼の大半はこのへんがメインでした。"
-        },
-        {
-          "id": "032b18b7-ec35-45f6-9389-412dfa655ac6",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "そして、以下の問題に今も悩まされながら奮闘しています。"
-        },
-        {
-          "id": "010b75b0-38e4-4d4c-b145-e2a5b437e7fd",
-          "breakBefore": false,
-          "type": "bullet",
-          "text": "・実用性と強度の壁： ただ形にするだけでなく、寸法精度や材料の選定、実用に耐えうる強度が求められるジャンルだからこその苦労"
-        },
-        {
-          "id": "1d806ba4-4d60-44c3-a821-498268c0916b",
-          "breakBefore": false,
-          "type": "bullet",
-          "text": "・後処理・仕上げテクニック： 一括出力にこだわらず、分割して出力した後に接着し、パテ埋めや研磨が必要"
-        },
-        {
-          "id": "d0781e9f-0eca-45dc-b227-a3daf990d06c",
-          "breakBefore": false,
-          "type": "bullet",
-          "text": "・デジタル vs フィジカルの戦い： Blenderでどれだけ完璧な造形を作っても、それを3Dプリンターのベッドに吐き出した瞬間から、リアルな物理現象との戦いが始まる。"
-        },
-        {
-          "id": "a9c10531-7b08-405d-96ff-0b40dfed4649",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "さてはて、いったいこっからどうなることやら...."
-        },
-        {
-          "id": "c4f4e470-17a6-47b0-ad45-4012898d72f7",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-12.webp",
-              "className": "",
-              "width": 1365,
-              "height": 768
-            }
-          ],
-          "caption": "協力者と友人・先輩・自分(右から二番目)の集合写真。全員の各部分に自分の作成した小物が使われている。",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "660da570-618a-48c5-b79f-f50bae21fb11",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "AI×3Dモデリングと3Dプリントの未来について"
-        },
-        {
-          "id": "bdd0706f-71ca-4562-bafc-05445c5faaff",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "CR-10 V3を導入し、頼まれた小物を作る機会が増えてきたことで、モデリングに割く時間がボトルネックになってきました。 そこで、話題になっていた「Meshy AI」の無料プランを使って、AIにモデリングを試してもらうことにしました。"
-        },
-        {
-          "id": "825482d4-5c65-49ea-ac5c-179d62f59734",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-01.webp",
-              "className": "",
-              "width": 719,
-              "height": 646
-            }
-          ],
-          "caption": "実際にmeshy aiを使用しモデリングしてもらったものをblenderに落としたもの",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "d79f52fc-7bc5-4b9b-8409-1a553a0afe0e",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "結果として感じたのは現状のAI製モデルは「見た目は綺麗でも細かいところで粗がある」「肉厚がペラペラ」といった理由で、複雑なモデルはそのままでは3Dプリンターで印刷できないなど、まだまだ改善点はあるものの、数分でできるモデリングなど、なかなか侮れないなと言う感じでした。"
-        },
-        {
-          "id": "c609adc6-7275-4208-9d9e-d150a544947f",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "とはいえ、こうしたフィジカル面の調整やスライス最適化も、近いうちにAIが自動で解決してくれる時代が来るのではないかと期待しています。"
-        },
-        {
-          "id": "fc7c0ec2-4b73-4acf-a535-316477b33e32",
-          "breakBefore": false,
-          "type": "figure",
-          "images": [
-            {
-              "src": "assets/images/11-07.webp",
-              "className": "portrait",
-              "width": 1536,
-              "height": 2048
-            }
-          ],
-          "caption": "調整をして印刷をしてみました。",
-          "layout": "single",
-          "qr": false,
-          "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "f62043aa-c560-46f5-b2ea-c83fbc2b381a",
-          "breakBefore": false,
-          "type": "heading",
-          "text": "まとめ"
-        },
-        {
-          "id": "25fc13e6-e0f9-4815-975f-5400fabcd69f",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "この1年、怒涛の3Dプリンター生活でした。ちゃんとした環境と知識を持って挑むべきですが、楽しさはありますよ。"
-        },
-        {
-          "id": "9b1015b9-2a27-4885-ac7c-7627deaf8697",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "自分は騒音になれて寝れるようになりましたが、彼女から嫌われそうなのでどっかでプリンターごと捨てられそうです。"
         }
       ]
     },
@@ -3211,6 +2952,25 @@
           "breakBefore": false,
           "type": "paragraph",
           "text": "趣味絵は自分のために自由を使う絵であり、依頼絵は他者との約束の中で自由を使う絵だと思います。両者に優劣はありません。ただ、締切と用途、受け取る相手の存在が加わることで、描くことは個人的な表現であると同時に、誰かの目的を支える仕事になります。その違いを意識し、技術と計画性の両方を身につけることが、これから依頼絵を描くうえでの課題です。"
+        },
+        {
+          "id": "9a99153f-cb42-4d2c-a67c-a2883ca22bd7",
+          "breakBefore": false,
+          "type": "figure",
+          "images": [
+            {
+              "src": "assets/images/12-03.webp",
+              "className": "portrait",
+              "width": 1414,
+              "height": 1999
+            }
+          ],
+          "caption": "",
+          "layout": "single",
+          "qr": false,
+          "width": 100,
+          "maxHeight": null,
+          "fullPage": true
         }
       ]
     },
@@ -3254,19 +3014,19 @@
           "id": "796df5b0-f6fd-4038-8f74-e6ab83c2e9c3",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "理論の部分を任せてみたい。そういう思いで開発に取り組んでみました！（ちなみに先行開発としてはMicrosoftのMysong(2008)などがある、別に初出ではないし、焼き直しもある）"
+          "text": "理論の部分を任せてみたい。そういう思いで開発に取り組んでみました！（ちなみに先行開発としてはMicrosoftのMySong(2008)などがある、別に初出ではないし、焼き直しもある）"
         },
         {
           "id": "901baeb7-1bc7-45f6-b88b-c62925c6f406",
           "breakBefore": false,
           "type": "heading",
-          "text": "3.準備"
+          "text": "2.準備"
         },
         {
           "id": "babd87fb-d5f5-4350-90e9-32adca67a02c",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "システム設計として、「入力：メロディ、出力：コード」という発想にすると、どうしてもその二対を学習セットにしなくてはなりません。人の音楽を使うというのは、とてつもなくリスキーな部分があります(実際、一度SunoAIが訴訟沙汰になったように)。たくさんのMIDIを安全に運用できるそんなデータセットなんて……"
+          "text": "システム設計として、「入力：メロディ、出力：コード」という発想にすると、どうしてもその二対を学習セットにしなくてはなりません。人の音楽を使うというのは、とてつもなくリスキーな部分があります(実際、一度SunoAIが訴訟沙汰になったように)。たくさんのメロディとコードを、非商用で調べられるデータセットなんて……"
         },
         {
           "id": "0e7c1aa0-5aec-471a-8af3-e632e6b66069",
@@ -3278,7 +3038,7 @@
           "id": "63a33c6c-5450-4724-b89f-9e135b75a5cd",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "HLSD(HookTheory Lead Sheet Dataset) 、メロディとコードをMIDIデータ化したデータセット。約26,000セクション程度あるらしい、非商用なだけ。なんと素晴らしいものだろうか。ということで、HLSDをあくまでデータセット(世の中の曲の傾向とか使われるコードとか)を理解するために使用することにしました。今までのリサーチ結果を表に置いておきます。"
+          "text": "Sheet Sage(Donahueら、2022)が公開している、HooktheoryのTheoryTabに基づくメロディとコードの注釈データセット。約26,000セクション程度あるらしい。ライセンスはCC BY-NC-SA 3.0で、非商用に限って使えます。なんと素晴らしいものだろうか。ということで、このデータセットを、世の中の曲の傾向や使われるコードの把握、出来上がったコード進行の検証、一部の既定値（キー判定など）の調整に使うことにしました。機械学習モデルの学習には使っていません。ここに載せているのは集計した数字だけで、収録曲の曲名・メロディ・コード進行は載せていません。今までのリサーチ結果を表に置いておきます。"
         },
         {
           "id": "d095de8b-f0d5-4f1a-986f-f59ba2aff678",
@@ -3308,13 +3068,19 @@
           "id": "4e0c791a-9b90-441a-97a4-09b4cd3b4a89",
           "breakBefore": false,
           "type": "paragraph",
-          "text": "ここでの和音の種類は「度数(I~vii)+コードの形(9th,aug7th)+転回系」の組み合わせを考えています。総じてこれらは5,872種類のコードへと分割できるが、そのうち3,000種類程度は全然使われないものだそう。びっくり。これだけでも探索がだいぶ楽になる。そこから、DP(動的計画法)をもちいて実装してもらったり、UIを考えてもらったりしました。最凡なコード進行を当初組ませていたが、どうにも味気ないと考えたためだんだんと拡張させていったものを、次の4章で示します。"
+          "text": "ここでの和音の種類は「度数(I~vii)+コードの形(9th,aug7th)+転回形」の組み合わせを考えています。表記の違いまで数えると5,872種類あり、そのうち半分以上(約3,200種類)は全データで1回しか出てこないそう。びっくり。人が使うコードは大きく偏っているんですね。（ただし、実際のコードの候補はこの頻度ではなく、音楽理論から作っています。）そこから、DP(動的計画法)をもちいて実装してもらったり、UIを考えてもらったりしました。平凡なコード進行を当初組ませていたが、どうにも味気ないと考えたためだんだんと拡張させていったものを、次の3章で示します。"
+        },
+        {
+          "id": "25a64070-9f9e-467e-ae26-76afdceb24a2",
+          "breakBefore": false,
+          "type": "paragraph",
+          "text": "(データセットの出典: C. Donahue, J. Thickstun, P. Liang. “Melody transcription via generative pre-training.” ISMIR 2022. https://arxiv.org/abs/2212.01884 / Sheet Sage — https://github.com/chrisdonahue/sheetsage (Hooktheory dataset, CC BY-NC-SA 3.0)。元データは TheoryTab(https://www.hooktheory.com/theorytab)の寄稿者によるもの)"
         },
         {
           "id": "620d3bd1-80aa-445e-8071-9b25cd8be809",
           "breakBefore": false,
           "type": "heading",
-          "text": "4.実際にできたプロダクト"
+          "text": "3.実際にできたプロダクト"
         },
         {
           "id": "09d2856f-98b1-47db-b10d-bc7869dcdd94",
@@ -3427,6 +3193,25 @@
           "text": "1.1 PianoFlowStudio:ブラウザ動作のMIDIビジュアライザー"
         },
         {
+          "id": "26b64cf2-eba9-4997-8527-d09f4f1d58f1",
+          "breakBefore": false,
+          "type": "paragraph",
+          "text": "X（旧Twitter）での企画「深夜の2時間DTM」やいつものWIP、YouTube等へ音楽を投稿したいというだけでも、演奏を動画にするだけのために専用ソフトを入れ、動画編集ソフトで音源と映像を合わせる手間がかかります。インストールもOS依存も面倒で、とにかくパッと使って、サクッと投稿したい。そんな時に使えるブラウザアプリが欲しくて作りました。制作の途中で似たMIDIビジュアライザーのサービスも登場しましたが、方針や機能が異なるため、そのまま自分の目的に合わせて作りました。"
+        },
+        {
+          "id": "a99b1406-537e-408b-bc9d-a217ee89bd36",
+          "breakBefore": false,
+          "type": "heading",
+          "text": "概要",
+          "headingLevel": 3
+        },
+        {
+          "id": "f100bd39-c821-4d27-8faa-4affea9af283",
+          "breakBefore": false,
+          "type": "paragraph",
+          "text": "題して「1HTMLチャレンジ」。勝手に私がそう称しているだけですが、条件は、Reactなどのフレームワークを使わず素のコードで書くこと、1つのHTMLファイルに収めること、完全にローカルで動くことです。単一ファイルだけでどこまでできてしまうのか、という興味のもとで行いました。MIDIファイルを読み込むとノートが鍵盤へ流れ、SoundFont(SF2/DLS)やSFZの音源で再生され、背景や配色を選んで、そのままMP4/WebMの動画に書き出せます。MIDIキーボードをつなぐだけでリアルタイムの演奏も可視化できるので、配信やバンドのキーボード練習、ピアノ練習にも使えます。ノートの形状や背景、流れる速度や方向、各種エフェクト等も自分好みに調整することができます。また、端末の性能に合わせて描画品質などの設定を調整できます。"
+        },
+        {
           "id": "246e3fa5-411d-4e2f-b506-05a049733767",
           "breakBefore": false,
           "type": "figure",
@@ -3442,7 +3227,7 @@
           "layout": "single",
           "qr": false,
           "width": 100,
-          "maxHeight": null
+          "maxHeight": 85
         },
         {
           "id": "2521f90f-d1b1-4500-a44d-c351f1ee00eb",
@@ -3460,31 +3245,14 @@
           "layout": "single",
           "qr": false,
           "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "26b64cf2-eba9-4997-8527-d09f4f1d58f1",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "X（旧Twitter）での企画「深夜の2時間DTM」やいつものWIP、YouTube等へ音楽を投稿したいというだけでも、演奏を動画にするだけのために専用ソフトを入れ、動画編集ソフトで音源と映像を合わせる手間がかかります。インストールもOS依存も面倒で、とにかくパッと使って、サクッと投稿したい。そんな時に使えるブラウザアプリが欲しくて作りました。制作の途中で似たMIDIビジュアライザーのサービスも登場しましたが、方針や機能が異なるため、そのまま自分の目的に合わせて作りました。"
-        },
-        {
-          "id": "a99b1406-537e-408b-bc9d-a217ee89bd36",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "概要"
-        },
-        {
-          "id": "f100bd39-c821-4d27-8faa-4affea9af283",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "題して「1HTMLチャレンジ」。勝手に私がそう称しているだけですが、条件は、Reactなどのフレームワークを使わず素のコードで書くこと、1つのHTMLファイルに収めること、完全にローカルで動くことです。単一ファイルだけでどこまでできてしまうのか、という興味のもとで行いました。MIDIファイルを読み込むとノートが鍵盤へ流れ、SoundFont(SF2/DLS)やSFZの音源で再生され、背景や配色を選んで、そのままMP4/WebMの動画に書き出せます。MIDIキーボードをつなぐだけでリアルタイムの演奏も可視化できるので、配信やバンドのキーボード練習、ピアノ練習にも使えます。ノートの形状や背���、流れる速度や方向、各種エフェクト等も自分好みに調整することができます。また、端末の性能に合わせて描画品質などの設定を調整できます。"
+          "maxHeight": 85
         },
         {
           "id": "bef30d80-fa9a-4ac7-8a27-d2071c6b7ccc",
           "breakBefore": false,
-          "type": "paragraph",
-          "text": "作った感想など："
+          "type": "heading",
+          "text": "作った感想など：",
+          "headingLevel": 3
         },
         {
           "id": "c7e4e339-5d1d-49d8-9bdd-a7b46155a42e",
@@ -3497,6 +3265,25 @@
           "breakBefore": false,
           "type": "heading",
           "text": "1.2 Quartertone DAW:12平均律以外で作るためのDAW"
+        },
+        {
+          "id": "5d3dd0c6-7ca9-4e90-b61a-a0fb31f816f8",
+          "breakBefore": false,
+          "type": "paragraph",
+          "text": "民族音楽の授業を受けて、12平均律以外の音楽への興味が高まったことがきっかけです。マカームなどの民族音階、純正律、Icefaceのような独自のチューニング、あるいは音律に縛られない微分音。こうした音楽を作ろうとすると、12平均律を前提にした多くのDAWや音源では手間が増えがちです。不可能ではありませんが、基音を変える・移調するたびにチューニングをやり直したり、ピッチベンドを手で書いたり、補正量が違うノートごとにトラックを分けたりする必要が出てきます。こうした制作にかかる作業を減らし、12平均律以外の音律での制作を行いやすくすること（そして12平均律以外を扱うクリエイターの人口を増やすこと）が目的です。"
+        },
+        {
+          "id": "8aafa669-6517-4fb6-85a2-a8795d784d97",
+          "breakBefore": false,
+          "type": "heading",
+          "text": "概要",
+          "headingLevel": 3
+        },
+        {
+          "id": "70450a48-9a62-43e4-82d0-81389d93e44a",
+          "breakBefore": false,
+          "type": "paragraph",
+          "text": "音律や基音を選ぶだけで、補正量の計算からチューニングまでを自動で行えるDAWです。プラグインではなくDAWごと作った理由は、仕組みの勉強のため、自作ならではの拡張性、既存ソフトの制約から自由になれることの、3つです。JUCEのコア部分を利用し、それ以外は新規に実装しています。現在の機能として目立つものは、メインである「調律機能」、「38種類のプリセット音階」、「EDOの任意入力」、「微分音に対応したピアノロール」、「コード進行やドラムパターンの支援」です。音源は、VST3とSoundFontに対応しています。"
         },
         {
           "id": "c8de2c9c-fffc-4bab-a3d5-edfd233bb9f4",
@@ -3514,7 +3301,7 @@
           "layout": "single",
           "qr": false,
           "width": 100,
-          "maxHeight": null
+          "maxHeight": 85
         },
         {
           "id": "80569cf9-9931-4bf0-badb-066206eaedb9",
@@ -3532,31 +3319,14 @@
           "layout": "single",
           "qr": false,
           "width": 100,
-          "maxHeight": null
-        },
-        {
-          "id": "5d3dd0c6-7ca9-4e90-b61a-a0fb31f816f8",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "民族音楽の授業を受けて、12平均律以外の音楽への興味が高まったことがきっかけです。マカームなどの民族音階、純正律、Icefaceのような独自のチューニング、あるいは音律に縛られない微分音。こうした音楽を作ろうとすると、12平均律を前提にした多くのDAWや音源では手間が増えがちです。不可能ではありませんが、基音を変える・移調するたびにチューニングをやり直したり、ピッチベンドを手で書いたり、補正量が違うノートごとにトラックを分けたりする必要が出てきます。こうした制作にかかる作業を減らし、12平均律以外の音律での制作を行いやすくすること（そして12平均律以外を扱うクリエイターの人口を増やすこと）が目的です。"
-        },
-        {
-          "id": "8aafa669-6517-4fb6-85a2-a8795d784d97",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "概要"
-        },
-        {
-          "id": "70450a48-9a62-43e4-82d0-81389d93e44a",
-          "breakBefore": false,
-          "type": "paragraph",
-          "text": "音律や基音を選ぶだけで、補正量の計算からチューニングまでを自動で行えるDAWです。プラグインではなくDAWごと作った理由は、仕組みの勉強のため、自作ならではの拡張性、既存ソフトの制約から自由になれることの、3つです。JUCEのコア部分を利用し、それ以外は新規に実装しています。現在の機能として目立つものは、メインである「調律機能」、「38種類のプリセット音階」、「EDOの任意入力」、「微分音に対応したピアノロール」、「コード進行やドラムパターンの支援」です。音源は、VST3とSoundFontに対応しています。"
+          "maxHeight": 85
         },
         {
           "id": "3f49e70e-8a82-4bd9-841d-72d2f34ae41a",
           "breakBefore": false,
-          "type": "paragraph",
-          "text": "作った感想など："
+          "type": "heading",
+          "text": "作った感想など：",
+          "headingLevel": 3
         },
         {
           "id": "0e1df0c9-bf42-4978-8be9-f50c55f8bff2",
@@ -3603,8 +3373,9 @@
         {
           "id": "95e3629f-9f1e-47e9-a4ef-b0e70dd96729",
           "breakBefore": false,
-          "type": "paragraph",
-          "text": "概要"
+          "type": "heading",
+          "text": "概要",
+          "headingLevel": 3
         },
         {
           "id": "48b51a04-bb67-4a67-b145-a014fd9dc058",
@@ -3628,13 +3399,14 @@
           "layout": "single",
           "qr": false,
           "width": 100,
-          "maxHeight": null
+          "maxHeight": 85
         },
         {
           "id": "71de9f9c-6fde-4073-803d-71fa3cd1fbed",
           "breakBefore": false,
-          "type": "paragraph",
-          "text": "作った感想など："
+          "type": "heading",
+          "text": "作った感想など：",
+          "headingLevel": 3
         },
         {
           "id": "4e093095-3125-4412-a078-b8fab816a51c",
@@ -4417,6 +4189,83 @@
           "displayUrl": "https://youtu.be/MmZLy0VGbwE"
         }
       ]
+    },
+    {
+      "id": "chapter-17",
+      "className": "chapter ch-17",
+      "title": "奥付・クレジット",
+      "author": "",
+      "blocks": [
+        {
+          "id": "9239a625-5002-46a6-9f09-6667c81b95ec",
+          "type": "heading",
+          "text": "nu_log Vol.01",
+          "breakBefore": false
+        },
+        {
+          "id": "7f34c4bb-bebd-4e4d-aafd-e78d0fcb1a6a",
+          "type": "paragraph",
+          "text": "発行者　nu_digital",
+          "breakBefore": false
+        },
+        {
+          "id": "8c144ff8-e175-4164-b40f-39b9f8e27122",
+          "type": "paragraph",
+          "text": "著者　yurarara／astra／しゅが／ぽてぃ／のぎ／iwa／しゃま／yoshi_pawn／asImpulse／F.F／ALMA／レモンキー／水舐瓜",
+          "breakBefore": false
+        },
+        {
+          "id": "e4509cb2-4b68-4abc-9fc4-5e241db72fce",
+          "type": "reference",
+          "text": "公式サイト・活動情報",
+          "url": "https://nu-digital.github.io/nu_digital/",
+          "displayUrl": "https://nu-digital.github.io/nu_digital/",
+          "breakBefore": false
+        },
+        {
+          "id": "ab4ba3b0-4fb4-4cd4-96ea-d4ab28e5511e",
+          "type": "reference",
+          "text": "連絡先　X：@nu_digital_",
+          "url": "https://x.com/nu_digital_",
+          "displayUrl": "https://x.com/nu_digital_",
+          "breakBefore": false
+        },
+        {
+          "id": "0229ddd7-c374-4129-be5c-74905ff88541",
+          "type": "heading",
+          "text": "表紙・撮影素材のクレジット",
+          "breakBefore": false
+        },
+        {
+          "id": "1a696e8d-245d-440f-9dcd-f835546e9c83",
+          "type": "paragraph",
+          "text": "ワールド　-yuuri-あきぞらキャンプ場\n制作　o_ゆうり_o",
+          "breakBefore": false
+        },
+        {
+          "id": "9ab3f558-164d-4124-b765-5182b6db60df",
+          "type": "reference",
+          "text": "VRChat ワールドページ",
+          "url": "https://vrchat.com/home/world/wrld_ad8933c6-90ad-49b4-8722-fa7f649c3e18",
+          "displayUrl": "https://vrchat.com/home/world/wrld_ad8933c6-90ad-49b4-8722-fa7f649c3e18",
+          "breakBefore": false
+        },
+        {
+          "id": "c2207360-e563-4739-9f1c-2b3234a45d26",
+          "type": "paragraph",
+          "text": "アバター　オリジナル3Dモデル「セイラン」",
+          "breakBefore": false
+        },
+        {
+          "id": "10512692-f4e6-4b38-84b3-a98f016d568a",
+          "type": "reference",
+          "text": "セイラン 配布・販売ページ",
+          "url": "https://booth.pm/ja/items/6359289",
+          "displayUrl": "https://booth.pm/ja/items/6359289",
+          "breakBefore": false
+        }
+      ],
+      "editorNotes": "入稿前の確認：発行日・版、編集責任者、表紙撮影者、印刷所（印刷版）、表紙の撮影場所がこのワールドか、ほかにクレジットが必要なアバター・衣装・小物の正式名と作者。未確認項目は本文に推測で記載していません。\nワールド名・作者の確認：VRChat公式 https://ask.vrchat.com/t/developer-update-19-november-2026/49409 および世界IDの照合 https://vrcmap.com/world/wrld_ad8933c6-90ad-49b4-8722-fa7f649c3e18\nアバターの作者確認：https://booth.pm/ja/items/6359289\n執筆者一覧は追加時点の記事から作成。著者や記事を変更した場合は更新してください。"
     }
   ],
   "groups": [
@@ -4439,14 +4288,14 @@
       "articles": [
         "chapter-7",
         "chapter-8",
-        "chapter-9"
+        "chapter-9",
+        "chapter-18"
       ]
     },
     {
       "title": "3D・イラスト",
       "articles": [
         "chapter-10",
-        "chapter-11",
         "chapter-12"
       ]
     },
@@ -4457,6 +4306,12 @@
         "chapter-14",
         "chapter-15",
         "chapter-16"
+      ]
+    },
+    {
+      "title": "巻末",
+      "articles": [
+        "chapter-17"
       ]
     }
   ],

@@ -57,6 +57,7 @@ const server=http.createServer(async(req,res)=>{
    if(p==='/api/build'){
     if(busy)throw fail(409,'PDF出力中です。');
     if(b.revision!==rev)throw fail(409,'先に変更を保存してください。');
+    if(!model.articles.some(a=>!a.draft))throw fail(400,'PDFに含める章がありません。下書き設定を外してください。');
     const includeCovers=b.includeCovers!==false;
     const filename=includeCovers?'nu_log.pdf':'nu_log-no-covers.pdf';
     busy=true;job={status:'running',includeCovers,url:'/output/'+filename,startedAt:new Date().toISOString(),log:''};
@@ -81,7 +82,7 @@ const server=http.createServer(async(req,res)=>{
   if(p.startsWith('/assets/images/'))return await serve(res,path.join(root,'assets/images'),p.slice(15));
   if(p==='/styles/book.css')return await serve(res,path.join(root,'styles'),'book.css');
   if(['/output/nu_log.pdf','/output/nu_log-no-covers.pdf'].includes(p))return await serve(res,path.join(root,'output/editor'),p.slice(8));
-  if(['/','/app.js','/app.css'].includes(p))return await serve(res,path.join(here,'public'),p==='/'?'index.html':p.slice(1));
+  if(['/','/app.js','/app.css','/chapters.js'].includes(p))return await serve(res,path.join(here,'public'),p==='/'?'index.html':p.slice(1));
   throw fail(404,'見つかりません。');
  }catch(e){json(res,e.status|| (e.code==='ENOENT'?404:400),{error:e.message});}
 });

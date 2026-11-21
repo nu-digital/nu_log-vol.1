@@ -1803,5 +1803,75 @@
       }
     },
     "originalFile": "assets/images/16-01.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-01.webp",
+    "bytes": 110214,
+    "sha256": "1b960d7e28c8551a7fccb586b7596f46819cf03b312aa2cf408ff9c99bc91d7c",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image80.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-02.webp",
+    "bytes": 30000,
+    "sha256": "79cb60da9831f0dd8e6b7b79b411278ecc57c0862f238126232e942323b8ec63",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image8.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-03.webp",
+    "bytes": 10846,
+    "sha256": "7c85780097e6dd9b6622e6abb77a2b01d782b86b032a0eaa82bbfe104ce280da",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image50.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-04.webp",
+    "bytes": 8912,
+    "sha256": "d82aaaa7b4d6801fd849a4382aa2bc6d57f38dcb74ef7bf0efc08a93ece8e939",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image89.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-05.webp",
+    "bytes": 383564,
+    "sha256": "3368e48054ab2a8bed0439d0290c6de3cbb60a27a96fe268aa90ae615f044696",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image45.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-06.webp",
+    "bytes": 695604,
+    "sha256": "c1f4d3f1ac6888aeed0082934f189bae0a512982b0a45cd8171075ddf8e37b3a",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image97.png"
+  },
+  {
+    "tab": "yoshi_pawn",
+    "file": "assets/images/10-07.webp",
+    "bytes": 2538,
+    "sha256": "98e5cc9ba57212fce3c85bf96d27443858ca0bcb783666f43bc647f4880482b1",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image69.png"
+  },
+  {
+    "tab": "asImpulse",
+    "file": "assets/images/12-03.webp",
+    "bytes": 1179200,
+    "sha256": "32080cc702ab9972015faf482d9d1281fe2480d1bc4bbba0df75448f9c15d9fa",
+    "importSource": "look/nu_digital活動誌(技術書典)/images/image72.png"
+  },
+  {
+    "tab": "AIエージェントと編集室",
+    "objectId": "local-18-01.webp",
+    "file": "assets/images/18-01.webp",
+    "bytes": 202408,
+    "sha256": "b5b44475472677b9387519e60c796fdc7fa4dab14fa6d0ffcfeff539543223df"
+  },
+  {
+    "tab": "AIエージェントと編集室",
+    "objectId": "local-18-02.webp",
+    "file": "assets/images/18-02.webp",
+    "bytes": 45450,
+    "sha256": "1b34e8dd501ee4db9ae55272fbd524317fb4811158f9a45f56d3fa6ec637b72b"
   }
 ]

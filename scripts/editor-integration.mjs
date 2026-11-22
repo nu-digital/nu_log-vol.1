@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {spawn,execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
+import http from 'node:http';
 const root=process.cwd();
 await fs.mkdir(path.join(root,'tmp'),{recursive:true});
 const temp=await fs.mkdtemp(path.join(root,'tmp/editor-integration-'));
@@ -13,6 +14,10 @@ async function start(){child=spawn(process.execPath,[path.join(root,'editor/serv
 async function stop(){child.kill();await new Promise(r=>child.once('close',r));}
 try{
  let s=await start();const original=s.model.articles[0].title;
+ // Split every Japanese character across transport chunks.
+ const fragmented=Buffer.from(JSON.stringify({model:s.model,revision:s.revision}));
+ await new Promise((resolve,reject)=>{const req=http.request(base+'/api/save',{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':s.token}},res=>{res.resume();res.on('end',()=>res.statusCode===200?resolve():reject(Error(`HTTP ${res.statusCode}`)))});req.on('error',reject);(async()=>{for(let offset=0;offset<fragmented.length;offset+=1021){req.write(fragmented.subarray(offset,offset+1021));await new Promise(r=>setTimeout(r,1));}req.end();})().catch(reject);});
+ const roundtrip=await fetch(base+'/api/state').then(r=>r.json());assert.deepEqual(roundtrip.model,s.model,'fragmented UTF-8 must survive saving unchanged');s=roundtrip;
  const post=(route,data,token=s.token)=>fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':token,Origin:base},body:JSON.stringify(data)});
  let r=await post('/api/save',{model:s.model,revision:s.revision},'invalid');assert.equal(r.status,403);
  s.model.articles[0].title=original+' 保存検証';

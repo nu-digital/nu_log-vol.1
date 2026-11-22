@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-11-21",
+  "imageCount": 9,
+  "articleImageCount": 5,
+  "imageCopiesHashMatched": true,
+  "brokenArticleImageLinks": 0,
+  "articleBlocks": 51,
+  "articleCharacters": 5235,
+  "repositorySchemaValidation": "PASS: actual validate() from reference repository, in-memory combined model; no repository write",
+  "existingArticlesPreserved": 15,
+  "repositoryCommit": "f391a7ce881bc89958cadfc76ec12d862531a512",
+  "unityStarted": false,
+  "testsRerun": false,
+  "bookPdfRendered": false,
+  "exhibitionPhoto": "pending author addition"
+}

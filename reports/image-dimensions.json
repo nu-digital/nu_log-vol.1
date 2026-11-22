@@ -634,5 +634,59 @@
     "width": 2000,
     "height": 1397,
     "widthAt300dpiMM": 169.3
+  },
+  {
+    "file": "lbe-cooking-2/01-kitchen-workbench.png",
+    "width": 778,
+    "height": 480,
+    "widthAt300dpiMM": 65.9
+  },
+  {
+    "file": "lbe-cooking-2/02-operator-debug.png",
+    "width": 408,
+    "height": 342,
+    "widthAt300dpiMM": 34.5
+  },
+  {
+    "file": "lbe-cooking-2/03-food-preview.png",
+    "width": 1200,
+    "height": 700,
+    "widthAt300dpiMM": 101.6
+  },
+  {
+    "file": "lbe-cooking-2/04-order-monitor.png",
+    "width": 1280,
+    "height": 800,
+    "widthAt300dpiMM": 108.4
+  },
+  {
+    "file": "lbe-cooking-2/05-tutorial-burger.png",
+    "width": 1280,
+    "height": 800,
+    "widthAt300dpiMM": 108.4
+  },
+  {
+    "file": "lbe-cooking-2/06-shared-storage.png",
+    "width": 1200,
+    "height": 700,
+    "widthAt300dpiMM": 101.6
+  },
+  {
+    "file": "lbe-cooking-2/07-drink-cups.png",
+    "width": 1200,
+    "height": 650,
+    "widthAt300dpiMM": 101.6
+  },
+  {
+    "file": "lbe-cooking-2/08-tutorial-sides.png",
+    "width": 1280,
+    "height": 800,
+    "widthAt300dpiMM": 108.4
+  },
+  {
+    "file": "lbe-cooking-2/09-results-preview.png",
+    "width": 1280,
+    "height": 750,
+    "widthAt300dpiMM": 108.4
   }
 ]

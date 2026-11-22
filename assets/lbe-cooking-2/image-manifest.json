@@ -1,0 +1,101 @@
+[
+  {
+    "file": "images/01-kitchen-workbench.png",
+    "source": "Assets/Image/スクリーンショット 2026-11-16 012145.png",
+    "date": "2026-11-16（元ファイル名）",
+    "kind": "厨房の配置",
+    "note": "本文採用。作業シート・食材・厨房の見た目。途中配置の参考スクショ。",
+    "width": 778,
+    "height": 480,
+    "bytes": 151193,
+    "sha256": "3aa7d69233b14a6340e9073918c10a6ff0c0bdc4f127bf5a37c0469b4e2b7ed8"
+  },
+  {
+    "file": "images/02-operator-debug.png",
+    "source": ".local/kitchen-screens/Rendering_20261114_013119_089.png",
+    "date": "2026-11-14",
+    "kind": "運営画面のデバッグ",
+    "note": "本文採用。300円・完成1件。408px幅のため誌面では小さめに配置。最新の運営画面ではない。",
+    "width": 408,
+    "height": 342,
+    "bytes": 17860,
+    "sha256": "3c6db8bdf59b67907595529dac0242486e0bd4383d310ce9c3e7d6dc37ae51df"
+  },
+  {
+    "file": "images/03-food-preview.png",
+    "source": ".local/comfort/food-preview.png",
+    "date": "2026-11-17",
+    "kind": "食品の検証用プレビュー",
+    "note": "本文採用。完成形・包装・ポテトを実アセットで描画。展示実写やHMD映像ではない。",
+    "width": 1200,
+    "height": 700,
+    "bytes": 42640,
+    "sha256": "8e5f92290709f207401942fb171c0b96fa78f0d2dbbf926a797131f64277bedc"
+  },
+  {
+    "file": "images/04-order-monitor.png",
+    "source": ".local/polish-preview/4.png",
+    "date": "2026-11-17（最終再描画記録）",
+    "kind": "注文モニターの検証用プレビュー",
+    "note": "本文採用。商品アイコン・提供数・完了チェック。数値は検証用。",
+    "width": 1280,
+    "height": 800,
+    "bytes": 106066,
+    "sha256": "1f18cfa22963b55630f084ea19b42a26ad5ea96047665e3cde420c052eb7ea8b"
+  },
+  {
+    "file": "images/05-tutorial-burger.png",
+    "source": ".local/polish-preview/0.png",
+    "date": "2026-11-17（最終再描画記録）",
+    "kind": "説明UIの検証用プレビュー",
+    "note": "本文採用。生成イラスト＋短いTMP説明。操作の概念図である。",
+    "width": 1280,
+    "height": 800,
+    "bytes": 269186,
+    "sha256": "39888b26c3e34579160ef786aeb0cc6dcfa9547477ca2d77ddf05eea2946c2dc"
+  },
+  {
+    "file": "images/06-shared-storage.png",
+    "source": ".local/comfort/storage-preview.png",
+    "date": "2026-11-17",
+    "kind": "共有保管棚の検証用プレビュー",
+    "note": "予備。上下3枠ずつのバーガー・ポテト用共有棚。ドリンクは保管対象外。",
+    "width": 1200,
+    "height": 700,
+    "bytes": 32717,
+    "sha256": "90e145bdbbc2c45e01bacfd13c05db939c878e922762933e1fcb6687d095dc6b"
+  },
+  {
+    "file": "images/07-drink-cups.png",
+    "source": ".local/drink-cups/preview.png",
+    "date": "2026-11-14",
+    "kind": "飲料の検証用プレビュー",
+    "note": "予備。左からジュース空/入り、コーヒー空/入り。種別と状態を見せる。",
+    "width": 1200,
+    "height": 650,
+    "bytes": 31627,
+    "sha256": "275cc970a770ef3c4c7146903878b9ce0860462ffccac80465de57d2f26c6ff4"
+  },
+  {
+    "file": "images/08-tutorial-sides.png",
+    "source": ".local/polish-preview/1.png",
+    "date": "2026-11-17（最終再描画記録）",
+    "kind": "説明UIの検証用プレビュー",
+    "note": "予備。生成したポテト・ドリンクの概念図と1.5秒の説明。",
+    "width": 1280,
+    "height": 800,
+    "bytes": 287605,
+    "sha256": "32a806a144cc41c92cf980e908d7f937c0305ce9e99d8f821152ad3265386765"
+  },
+  {
+    "file": "images/09-results-preview.png",
+    "source": ".local/audio-session/Results.png",
+    "date": "2026-11-14",
+    "kind": "終了UIの検証用プレビュー",
+    "note": "予備。売上4800円・12件はプレビュー用データ。展示の実績として使わない。",
+    "width": 1280,
+    "height": 750,
+    "bytes": 48287,
+    "sha256": "13e5affde13ba157298d187de204b11a9ed3ea1961825aa7b1ff16a58002c5c9"
+  }
+]

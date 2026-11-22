@@ -1,0 +1,1 @@
+PASS 3 tutorial pages, 4 monitor panels and counter panel rendered; no text overflow

@@ -27,7 +27,7 @@ normalizeImages(model);
 const allowed=new Set(library.map(i=>i.src));validate(model,allowed);await materialize(root,model);
 let rev=revision(model),busy=false,job={status:'idle'},previewId=0;const previews=new Map();
 const fail=(status,message)=>Object.assign(new Error(message),{status});
-async function body(req){let s='';for await(const c of req){s+=c;if(s.length>3000000)throw fail(413,'データが大きすぎます。');}try{return JSON.parse(s)}catch{throw fail(400,'JSONが不正です。')}}
+async function body(req){const chunks=[];let size=0;for await(const c of req){chunks.push(c);size+=c.length;if(size>3000000)throw fail(413,'データが大きすぎます。');}try{return JSON.parse(Buffer.concat(chunks).toString('utf8'))}catch{throw fail(400,'JSONが不正です。')}}
 function json(res,status,data){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));}
 async function persist(next,expected){
  if(busy)throw fail(409,'保存またはPDF出力中です。完了後にもう一度お試しください。');
